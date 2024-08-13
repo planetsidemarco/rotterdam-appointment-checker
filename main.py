@@ -9,7 +9,6 @@ import time
 import smtplib
 from datetime import datetime
 from pathlib import Path
-from typing import List
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
@@ -27,21 +26,20 @@ from deep_translator import GoogleTranslator
 
 XPATHS = {
     "appointment": "//a[@class='styles_button__BEjUn' and @title='Afspraak maken']",
-    "subject": "//button[@class='btn btn-link btn-block text-left' and @type='submit'"
-    "and @name='matches:form:keuzes:0:button:form:give-focus' and @id='id5']",
+    "overseas": "//input[@class='form-control' and @id='id6']",
+    "subject": "//button[@class='btn btn-link btn-block text-left' and @id='id5']",
     "rental": "//select[@class='form-control' and @aria-required='true' and "
-    "@name='matches:form:keuzes:0:button:form:in-focus:hvv:form:huurOfKoop:field' and @id='id10']",
+    "@name='matches:form:keuzes:0:button:form:in-focus:hvv:form:huurOfKoop:field']",
     "postcode": "//input[@type='text' and @class='form-control' and @maxlength='6' and"
-    "@name='matches:form:keuzes:0:button:form:in-focus:hvv:form:postcodeContainer:postcode'"
-    "and @id='id17']",
+    "@name='matches:form:keuzes:0:button:form:in-focus:hvv:form:postcodeContainer:postcode']",
     "postcode_input": "//button[@class='btn btn-secondary' and @type='submit' and"
-    "@name='matches:form:keuzes:0:button:form:in-focus:hvv:form:afspraak' and @id='id12']",
+    "@name='matches:form:keuzes:0:button:form:in-focus:hvv:form:afspraak']",
     "quantity_input": "//button[@class='btn btn-secondary' and @type='submit' and"
-    "@value='button' and @name='verder' and @id='id1a']",
+    "@value='button' and @name='verder']",
     "options": "//button[@class='list-group-item list-group-item-action flex-column "
-    "align-items-start' and @name='keuzes:0:give-focus' and @id='id1f']",
+    "align-items-start' and @name='keuzes:0:give-focus']",
     "options_input": "//button[@class='btn btn-secondary' and @type='submit' and @value='button'"
-    "and @name='keuzes:0:in-focus:button' and @id='id20']",
+    "and @name='keuzes:0:in-focus:button']",
     "calendar": "//span[@class='input-group-text' and @title='Kies datum ...']",
 }
 
@@ -67,6 +65,7 @@ def find_and_interact(element_xpath: str, action: str = "button", query: str = "
         select = Select(element)
         select.select_by_value(query)
     elif action == "textbox":
+        element.clear()
         element.send_keys(query)
     else:
         actions = ActionChains(driver)
@@ -111,18 +110,19 @@ def no_bookings_text():
 def check_for_bookings() -> bool:
     """Helper function to check if no booking text exists on page"""
     bookings = True
-    time.sleep(5)
     no_booking_text = "Het spijt ons."
     # Update current url source and get body text
+    time.sleep(1)
     driver.get("view-source:" + driver.current_url)
-    time.sleep(5)
+    time.sleep(1)
     current_body_text = driver.find_element(By.TAG_NAME, "body").text
     # Check if no booking text exists on page
     if no_booking_text in current_body_text:
         print("No bookings available")
         no_bookings_text()
         bookings = False
-
+    # Return from source code
+    driver.get(driver.current_url.replace("view-source:", ""))
     return bookings
 
 
@@ -209,6 +209,13 @@ check_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 print(f"Checking Rotterdam website appointments at {check_datetime}")
 
 find_and_interact("appointment")
+
+find_and_interact("overseas", action="textbox", query="Eerste vestiging buiten Europa")
+
+time.sleep(1)
+driver.refresh()
+time.sleep(1)
+
 find_and_interact("subject")
 find_and_interact("rental", action="dropdown", query="HUUR")
 find_and_interact("postcode", action="textbox", query="3039RL")
