@@ -233,4 +233,4 @@ if check_for_bookings():
 
 driver.quit()
 
-# send_email()
+send_email()
