@@ -93,7 +93,7 @@ def get_date_time_text():
         with open("date_time.txt", "w", encoding="utf-8") as file:
             # Write the string to the file
             file.write(f"{translated}\n")
-            file.write(f"\n{BASE_URL}/{APPOINTMENT_ENDPOINT}\n")
+            file.write(f"\n{BASE_URL}/{APPOINTMENT_ENDPOINT}\n\n")
     except ValueError as e:
         print(e)
 
@@ -104,25 +104,26 @@ def no_bookings_text():
     with open("date_time.txt", "w", encoding="utf-8") as file:
         # Write the string to the file
         file.write("not currently available\n")
-        file.write(f"\n{BASE_URL}/{APPOINTMENT_ENDPOINT}\n")
+        file.write(f"\n{BASE_URL}/{APPOINTMENT_ENDPOINT}\n\n")
 
 
 def check_for_bookings() -> bool:
     """Helper function to check if no booking text exists on page"""
     bookings = True
     no_booking_text = "Het spijt ons."
+    time.sleep(2)
     # Update current url source and get body text
-    time.sleep(1)
     driver.get("view-source:" + driver.current_url)
-    time.sleep(1)
+    time.sleep(2)
+    # Return from source code
+    driver.get(driver.current_url.replace("view-source:", ""))
+    time.sleep(2)
     current_body_text = driver.find_element(By.TAG_NAME, "body").text
     # Check if no booking text exists on page
     if no_booking_text in current_body_text:
         print("No bookings available")
         no_bookings_text()
         bookings = False
-    # Return from source code
-    driver.get(driver.current_url.replace("view-source:", ""))
     return bookings
 
 
@@ -232,4 +233,4 @@ if check_for_bookings():
 
 driver.quit()
 
-send_email()
+# send_email()
