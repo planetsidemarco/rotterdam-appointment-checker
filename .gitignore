@@ -1,5 +1,6 @@
 .DS_Store
-options.png
-calendar.png
-date_time.txt
+.vscode
+__pycache__
+*.png
+*.txt
 emailpass.env
