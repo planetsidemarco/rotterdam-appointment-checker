@@ -7,6 +7,7 @@ XPATHS = {
         "query": "",
         "screenshot": False,
         "textfile": False,
+        "end_condition": False,
     },
     "overseas": {
         "xpath": "//input[@class='form-control' and @id='id6']",
@@ -14,6 +15,7 @@ XPATHS = {
         "query": "Eerste vestiging buiten Europa",
         "screenshot": False,
         "textfile": False,
+        "end_condition": False,
     },
     "subject": {
         "xpath": "//button[@class='btn btn-link btn-block text-left' and @id='id5']",
@@ -21,6 +23,7 @@ XPATHS = {
         "query": "",
         "screenshot": False,
         "textfile": False,
+        "end_condition": False,
     },
     "rental": {
         "xpath": "//select[@class='form-control' and @aria-required='true' and "
@@ -29,6 +32,7 @@ XPATHS = {
         "query": "HUUR",
         "screenshot": False,
         "textfile": False,
+        "end_condition": False,
     },
     "postcode": {
         "xpath": "//input[@type='text' and @class='form-control' and @maxlength='6' and"
@@ -37,6 +41,7 @@ XPATHS = {
         "query": "3039RL",
         "screenshot": False,
         "textfile": False,
+        "end_condition": False,
     },
     "postcode_input": {
         "xpath": "//button[@class='btn btn-secondary' and @type='submit' and"
@@ -45,6 +50,7 @@ XPATHS = {
         "query": "",
         "screenshot": False,
         "textfile": False,
+        "end_condition": False,
     },
     "quantity_input": {
         "xpath": "//button[@class='btn btn-secondary' and @type='submit' and"
@@ -53,6 +59,7 @@ XPATHS = {
         "query": "",
         "screenshot": False,
         "textfile": False,
+        "end_condition": False,
     },
     "options": {
         "xpath": "//button[@class='list-group-item list-group-item-action flex-column "
@@ -61,6 +68,7 @@ XPATHS = {
         "query": "",
         "screenshot": True,
         "textfile": True,
+        "end_condition": True,
     },
     "options_input": {
         "xpath": "//button[@class='btn btn-secondary' and @type='submit' and @value='button'"
@@ -69,6 +77,7 @@ XPATHS = {
         "query": "",
         "screenshot": False,
         "textfile": False,
+        "end_condition": False,
     },
     "calendar": {
         "xpath": "//span[@class='input-group-text' and @title='Kies datum ...']",
@@ -76,5 +85,6 @@ XPATHS = {
         "query": "",
         "screenshot": True,
         "textfile": False,
+        "end_condition": False,
     },
 }

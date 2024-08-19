@@ -11,7 +11,7 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import Select
@@ -82,9 +82,13 @@ class WebChecker:
         write_textfile(self.datetime_filename, no_booking_text)
         self.bookings_available = False
 
-    def check_for_bookings(self):
-        """Helper function to check if no booking text exists on page"""
-        if self.bookings_available:
+    def check_for_bookings(self, xpath_value: dict):
+        """Helper function to check if no booking text exists on page
+
+        Args:
+            xpath_value (dict): values of xpath dict
+        """
+        if xpath_value["end_condition"] and self.bookings_available:
             self.refresh_page()
             current_body_text = self.driver.find_element(By.TAG_NAME, "body").text
             # Check if no booking text exists on page
@@ -110,34 +114,37 @@ class WebChecker:
                 self.element.clear()
                 self.element.send_keys(query)
 
-    def find_and_interact(self, element_key: str, action: str, query: str):
+    def find_and_interact(self, element_key: str, xpath_value: dict):
         """Find elements and interact with them on a webpage
 
         Args:
             element_xpath (str): expected element name
-            action (str, optional): type of input element, defaults to "button".
-            query (str, optional): query for dropdown and textbox elements. Defaults to "".
+            xpath_value (dict): values of xpath dict
         """
-        self.check_for_bookings()
         if self.bookings_available:
             print(f"Selecting {element_key} element")
             # Find element on webpage
-            try:
-                xpath = RotterdamXPaths[element_key]["xpath"]
-                self.element = WebDriverWait(self.driver, 30).until(
-                    EC.presence_of_element_located((By.XPATH, xpath))
-                )
-                # Scroll found element into view
-                self.driver.execute_script(
-                    "arguments[0].scrollIntoView();", self.element
-                )
-                time.sleep(1)
-                self.select_action(action, query)
-                WebDriverWait(self.driver, 30).until(EC.number_of_windows_to_be(2))
-                self.driver.switch_to.window(self.driver.window_handles[-1])
-            except TimeoutException:
-                print("TimeoutException: XPATH could not be found")
-                self.driver.quit()
+            while True:
+                try:
+                    xpath = RotterdamXPaths[element_key]["xpath"]
+                    self.element = WebDriverWait(self.driver, 30).until(
+                        EC.presence_of_element_located((By.XPATH, xpath))
+                    )
+                    # Scroll found element into view
+                    self.driver.execute_script(
+                        "arguments[0].scrollIntoView();", self.element
+                    )
+                    time.sleep(1)
+                    self.select_action(xpath_value["action"], xpath_value["query"])
+                    WebDriverWait(self.driver, 30).until(EC.number_of_windows_to_be(2))
+                    self.driver.switch_to.window(self.driver.window_handles[-1])
+                    break
+                except TimeoutException:
+                    print("TimeoutException: XPATH could not be found")
+                    self.driver.quit()
+                    break
+                except StaleElementReferenceException:
+                    self.refresh_page()
 
     def save_full_page_screenshot(self, filename: str):
         """Helper function to save screenshot of current webpage
@@ -172,17 +179,16 @@ class WebChecker:
         except ValueError as e:
             print(e)
 
-    def export_web_data(self, key: str, save_screenshot: bool, save_textfile: bool):
+    def export_web_data(self, key: str, xpath_value: dict):
         """Helper function to save web data for specific pages
 
         Args:
             key (str): name of web page
-            save_screenshot (bool): requirement to save screenshot
-            save_textfile (bool): requirement to save textfile
+            xpath_value (dict): values of xpath dict
         """
-        if save_screenshot:
+        if xpath_value["screenshot"]:
             self.save_full_page_screenshot(key)
-        elif save_textfile:
+        elif xpath_value["textfile"]:
             self.save_date_time_text()
 
 
@@ -196,10 +202,14 @@ def web_checker(wc: WebChecker):
 
     # Iterate through the XPATHS dictionary
     for key, value in RotterdamXPaths.items():
+        # Conditional end check for bookings
+        wc.check_for_bookings(value)
+
         # Navigate through inputs based on rotterdam_xpaths
-        wc.find_and_interact(key, value["action"], value["query"])
+        wc.find_and_interact(key, value)
+
         # Additional actions for specific keys
-        wc.export_web_data(key, value["screenshot"], value["textfile"])
+        wc.export_web_data(key, value)
 
     wc.driver.quit()
 
