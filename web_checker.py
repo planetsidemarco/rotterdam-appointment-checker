@@ -188,7 +188,7 @@ class WebChecker:
         """
         if xpath_value["screenshot"]:
             self.save_full_page_screenshot(key)
-        elif xpath_value["textfile"]:
+        if xpath_value["textfile"]:
             self.save_date_time_text()
 
 
@@ -227,6 +227,6 @@ if __name__ == "__main__":
         body="Next appointment ",
     )
 
-    send_email(content)
+    # send_email(content)
 
     print("Check complete and email sent")
