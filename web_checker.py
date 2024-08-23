@@ -227,6 +227,6 @@ if __name__ == "__main__":
         body="Next appointment ",
     )
 
-    # send_email(content)
+    send_email(content)
 
     print("Check complete and email sent")
