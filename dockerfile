@@ -15,10 +15,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and install Geckodriver for Linux ARM64
-RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux-aarch64.tar.gz \
-    && tar -xzf geckodriver-v0.33.0-linux-aarch64.tar.gz \
-    && mv geckodriver /usr/local/bin/ \
-    && rm geckodriver-v0.33.0-linux-aarch64.tar.gz
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.35.0/geckodriver-v0.35.0-linux-aarch64.tar.gz
+RUN tar -xzf geckodriver-v0.35.0-linux-aarch64.tar.gz
+RUN mv geckodriver /usr/local/bin/
+RUN rm geckodriver-v0.35.0-linux-aarch64.tar.gz
 
 # Ensure Firefox and Geckodriver are in the PATH
 ENV PATH="/usr/local/bin:/usr/bin:${PATH}"

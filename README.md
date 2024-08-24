@@ -10,7 +10,7 @@ Outputs a text file of next earliest appointment time, screenshot of that option
 
 ## Docker
 
-Building docker container with command: ```docker build -t rotterdam .```
+Building docker container with command: ```docker build --no-cache -t rotterdam .```
 
 Running interactive docker container with command: ```docker run -it --rm -v $(pwd):/usr/src/app -e DISPLAY=:99 rotterdam```
 
@@ -18,4 +18,4 @@ Running interactive docker container with command: ```docker run -it --rm -v $(p
 
 Running cronjob every 6 hours with command (`crontab -e`):
 
-`0 */6 * * * cd /home/ec2-user/rotterdam-appointment-checker/ && docker run --rm  -v $(pwd):/app rotterdam >> /home/ec2-user/logfile.log 2>&1`
+`0 */6 * * * cd /home/ec2-user/rotterdam-appointment-checker/ && docker run --rm -v $(pwd):/usr/src/app rotterdam >> /home/ec2-user/logfile.log 2>&1`
