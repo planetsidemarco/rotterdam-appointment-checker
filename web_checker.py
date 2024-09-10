@@ -160,24 +160,25 @@ class WebChecker:
 
     def save_date_time_text(self):
         """Extract date and time from webpage and creates textfile with result"""
-        time.sleep(0.5)
-        text = self.driver.find_element(By.TAG_NAME, "body").text
-        start, end = "Centrum", "Coolsingel"
+        if self.bookings_available:
+            time.sleep(0.5)
+            text = self.driver.find_element(By.TAG_NAME, "body").text
+            start, end = "Centrum", "Coolsingel"
 
-        try:
-            start_pos = text.index(start) + len(start)
-            end_pos = text.index(end)
-            filtered_text = text[start_pos:end_pos].strip()
-            # Translate text from dutch to english
-            translated_text = GoogleTranslator(source="auto", target="en").translate(
-                filtered_text
-            )
-            print(f"Saving earliest appointment date/time to {self.datetime_filename}")
-            booking_text = [f"{translated_text}\n", f"\n{self.full_url}\n\n"]
-            write_textfile(self.datetime_filename, booking_text)
+            try:
+                start_pos = text.index(start) + len(start)
+                end_pos = text.index(end)
+                filtered_text = text[start_pos:end_pos].strip()
+                # Translate text from dutch to english
+                translated_text = GoogleTranslator(source="auto", target="en").translate(
+                    filtered_text
+                )
+                print(f"Saving earliest appointment date/time to {self.datetime_filename}")
+                booking_text = [f"{translated_text}\n", f"\n{self.full_url}\n\n"]
+                write_textfile(self.datetime_filename, booking_text)
 
-        except ValueError as e:
-            print(e)
+            except ValueError as e:
+                print(e)
 
     def export_web_data(self, key: str, xpath_value: dict):
         """Helper function to save web data for specific pages
@@ -229,4 +230,4 @@ if __name__ == "__main__":
 
     send_email(content)
 
-    print("Check complete and email sent")
+    print(f"Check complete at {current_datetime()}")

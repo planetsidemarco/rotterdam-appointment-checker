@@ -102,10 +102,15 @@ class EmailBot:
     def send_message(self):
         """Function to send email message"""
         # Create SMTP session
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls()
-            server.login(self.bot_email, self.bot_pass)
-            server.send_message(self.message)
+        print(f"Sending email to {self.receiver_email} at {current_datetime()}")
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as server:
+                server.starttls()
+                server.login(self.bot_email, self.bot_pass)
+                server.send_message(self.message)
+            print(f"Email sent at {current_datetime()}")
+        except OSError as e:
+            print(f"{e}: email could not be sent")
 
 
 class EmailContent:
@@ -134,8 +139,6 @@ def send_email(email_content: EmailContent):
     if email_content.conditional_string not in eb.file_contents:
         # Update attachments list if files found in current directory
         eb.check_for_attachements(email_content.allowed_attachments)
-
-    print(f"Sending email to {eb.receiver_email} at {current_datetime()}")
 
     eb.create_message(subject=email_content.subject)
     eb.add_message_body(body=f"{email_content.body}{eb.file_contents}")
